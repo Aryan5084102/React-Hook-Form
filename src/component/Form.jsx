@@ -15,15 +15,20 @@ const Form = () => {
     } = useForm();
 
     const [jobRole, setJobRole] = useState("");
+    const [select, setSelect] = useState('')
 
     const handleChange = (e) => {
         setJobRole(e.target.value);
     };
 
+    const onSelect = (e) =>{
+        setSelect(e.target.value)
+    }
 
-
-    const onSubmit = (data) => {
-        console.log(data);
+    const onSubmit = async (data) => {
+        let response = fetch("http://localhost:3000/", {method: "POST", headers: {"Content-Type" : "application/json"}, body: JSON.stringify(data) })
+        let result = response.text()
+        console.log(result,data);
     };
 
     return (
@@ -57,9 +62,9 @@ const Form = () => {
                                         fullWidth
                                         label={field.label}
                                         variant="filled"
-                                        {...register(field.registerField, { required: true })}
+                                        {...register(field.registerField, { required: `${field.label} is required` })}
                                         error={!!errors[field.registerField]}
-                                        helperText={errors[field.registerField] ? `${field.label} is required` : ""}
+                                        helperText={errors[field.registerField]?.message }
                                         sx={{ backgroundColor: 'white', borderRadius: 1 }}
                                     />
                                 </Grid>
@@ -68,13 +73,16 @@ const Form = () => {
                             <Grid item xs={12}>
                                 <FormControl error={!!errors.gender} component="fieldset" sx={{ mt: 1, width: 230 }}>
                                     <FormLabel component="legend" >Gender</FormLabel>
-                                    <RadioGroup row {...register("gender", { required: true })}>
+                                    <RadioGroup row {...register('gender', {required: "Please select your gender"})} onChange={(e) =>{
+                                        onSelect(e);
+                                        register("gender").onChange(e)
+                                    }} >
                                         <FormControlLabel value="female" control={<Radio />} label="Female" />
                                         <FormControlLabel value="male" control={<Radio />} label="Male" />
                                         <FormControlLabel value="other" control={<Radio />} label="Other" />
                                     </RadioGroup>
-                                    {errors.gender && <Typography color="error" variant="caption">Gender is Required.</Typography>}
                                 </FormControl>
+                                    {errors.gender && <Typography color="error" variant="caption">Please select your Gender</Typography>}
                             </Grid>
 
                             <Grid item xs={12}>
@@ -84,7 +92,7 @@ const Form = () => {
                                         labelId="job-role-label"
                                         value={jobRole}
                                         label="Job Role"
-                                        {...register('jobRole', { required: true })}
+                                        {...register('jobRole', { required: "Please select a job Role" })}
                                         onChange={handleChange}
                                         sx={{ backgroundColor: '#F4F4F4' }}
                                     >
@@ -93,7 +101,7 @@ const Form = () => {
                                         <MenuItem value="backendDeveloper">Backend Developer</MenuItem>
                                         <MenuItem value="fullstackDeveloper">Fullstack Developer</MenuItem>
                                     </Select>
-                                    {errors.jobRole && <Typography color="error" variant="caption">Job Role is Required.</Typography>}
+                                    {errors.jobRole && <Typography color="error" variant="caption">Please select a job Role</Typography>}
                                 </FormControl>
                             </Grid>
 
@@ -103,12 +111,15 @@ const Form = () => {
                                 rows={2}
                                 label="Address"
                                 variant="filled"
-                                {...register("textarea", { required: true })}
+                                {...register("textarea",{
+                                    required: "Address is required",
+                                    minLength: {value: 10, message: "Minimum 10 characters required"},
+                                    maxLength: {value: 100, message: "Maximum 100 characters required"},
+                                })}
                                 error={!!errors.textarea}
-                                helperText={errors.textarea ? "Address is Required." : ""}
+                                helperText={errors.textarea?.message}
                                 sx={{ backgroundColor: 'white', borderRadius: 1 }}
                             />
-
                             <Button
                                 type="submit"
                                 fullWidth
