@@ -1,0 +1,27 @@
+.form-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid grey;
+    width: 40%;
+    margin: 0px auto;
+    padding: 20px;
+}
+
+.name-row{
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.red{
+    color: red;
+    font-size: 12px;
+}
+
+.fieldBox{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
